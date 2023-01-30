@@ -3,11 +3,7 @@
     "name": "s3_script",
     "description": "",
     "role": "arn:aws:iam::113524984329:role/s3_glue_quest",
-    "command" : {
-      "name" : "pythonshell",
-      "scriptLocation" : "https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py",
-      "pythonVersion" : "3"
-    },
+    "command": "pythonshell",
     "version": "3.0",
     "workerType": null,
     "numberOfWorkers": null,
@@ -17,6 +13,7 @@
     "maxConcurrentRuns": 1,
     "security": "none",
     "scriptName": "s3_script.py",
+    "scriptLocation": "s3://aws-glue-assets-113524984329-us-east-1/scripts/",
     "language": "python-3.9",
     "jobParameters": [],
     "tags": [],
@@ -36,5 +33,6 @@
     },
     "pythonPath": null
   },
-  "hasBeenSaved": false
+  "hasBeenSaved": false,
+  "script": "#!/usr/bin/env python\n# coding: utf-8\n\n# # Saving the files to S3 Bucket\n\n# ### Importing the packages\n\nimport re\nimport csv\nimport boto3\nimport requests\nfrom bs4 import BeautifulSoup\nimport functools\nimport json\n\n\n# ### Class constructor\n\nclass manage_s3():\n    def __init__(self,bucket_name,url,key=None):\n        self.bucket_name = bucket_name\n        self.url = url\n\n        # AWS credentials as not needed as this script will run on AWS.\n        # For running on local machines please uncomment the following lines.\n        \n        if key:\n            with open(key, \"r\") as f:\n                self.AK,self.SK = [x.split()[0] for x in f.readlines()[-1].split(',')]\n            self.s3 = boto3.resource('s3',                      \n                aws_access_key_id=self.AK, aws_secret_access_key=self.SK\n            )\n        else:\n            self.s3 = boto3.resource('s3')\n\n# ### Get the file names\n\n    def get_name(self):\n        soup = BeautifulSoup(requests.get(self.url).text, \"lxml\")\n        print(\"Reading file names complete.\")\n        return [page.string for page in soup.findAll('a', href=re.compile(''))[1:]]\n\n\n# ### Read the files from S3\n\n    def read_s3(self):\n        ret_dict = {}\n        # Create bucket if not exist, else get the bucket.\n        bucket = self.s3.create_bucket(Bucket=self.bucket_name)\n        for i,obj in enumerate(bucket.objects.all()):\n            ret_dict[obj.key] = obj.get()['Body'].read()\n        print(\"Reading s3 complete.\")\n        return ret_dict\n\n\n# ### Sync the files\n\n    def sync_files(self):\n        files = self.get_name()\n        s3_files = self.read_s3()\n        file_name = s3_files.keys()\n        \n        print(\"Uploading/Updating files to s3\")\n        \n        for i, f in enumerate(files):\n            with requests.get(self.url+f, stream=True) as r:\n                if f not in file_name:\n                    self.s3.Object(self.bucket_name, f).put(Body=r.content)\n                    print(f\"{i+1}) {f} uploaded\")\n                else:\n                    if r.content != s3_files[f]:\n                        self.s3.Object(self.bucket_name, f).put(Body=r.content)\n                        print(f\"{i+1}) {f} updated\")\n                    else:\n                        print(f\"{i+1}) {f} skipped\")\n        \n        print(\"Deleting files from s3\")\n        \n        del_f = [f for f in file_name if f not in files]\n        for i, f in enumerate(del_f):\n            self.s3.Object(self.bucket_name, f).delete()\n            print(f\"{i+1}) {f} deleted\")\n\n# ### Execution\n\nbucket_name = \"s1quest\"\nres_url = \"https://download.bls.gov/pub/time.series/pr/\"\n\ns = manage_s3(bucket_name, res_url)\ns.sync_files()"
 }
