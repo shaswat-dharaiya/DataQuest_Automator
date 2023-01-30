@@ -1,10 +1,40 @@
 {
-  "name": "s3_script",
-  "description" : "",
-  "role": "arn:aws:iam::113524984329:role/s3_glue_quest",
-  "command" : {
-    "name" : "pythonshell",
-    "scriptLocation" : "https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py",
-    "pythonVersion" : "3"
-  }
-} 
+  "jobConfig": {
+    "name": "s3_script",
+    "description": "",
+    "role": "arn:aws:iam::113524984329:role/s3_glue_quest",
+    "command" : {
+      "name" : "pythonshell",
+      "scriptLocation" : "https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py",
+      "pythonVersion" : "3"
+    },
+    "version": "3.0",
+    "workerType": null,
+    "numberOfWorkers": null,
+    "maxCapacity": 0.0625,
+    "maxRetries": 3,
+    "timeout": 2880,
+    "maxConcurrentRuns": 1,
+    "security": "none",
+    "scriptName": "s3_script.py",
+    "language": "python-3.9",
+    "jobParameters": [],
+    "tags": [],
+    "jobMode": "DEVELOPER_MODE",
+    "developerMode": true,
+    "connectionsList": [],
+    "temporaryDirectory": "s3://aws-glue-assets-113524984329-us-east-1/temporary/",
+    "glueHiveMetastore": true,
+    "etlAutoTuning": false,
+    "pythonShellPrebuiltLibraryOption": "analytics",
+    "flexExecution": false,
+    "minFlexWorkers": null,
+    "sourceControlDetails": {
+      "Provider": "GITHUB",
+      "Repository": "Rearc-Quest",
+      "Branch": "main"
+    },
+    "pythonPath": null
+  },
+  "hasBeenSaved": false
+}
