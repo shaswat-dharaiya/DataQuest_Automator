@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Run script file
         run: |
-            chmod +x ./sync_s3.sh
-            ./sync_s3.sh
+          chmod +x ./sync_s3.sh
+          ./sync_s3.sh
         shell: bash
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
