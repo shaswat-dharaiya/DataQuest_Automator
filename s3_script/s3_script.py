@@ -63,23 +63,26 @@ class manage_s3():
         print("Uploading/Updating files to s3")
         
         for i, f in enumerate(files):
+            file = f'dataset/{f}'
             with requests.get(self.url+f, stream=True) as r:
                 if f not in file_name:
-                    self.s3.Object(self.bucket_name, f).put(Body=r.content)
-                    print(f"{i+1}) {f} uploaded")
+                    self.s3.Object(self.bucket_name, file).put(Body=r.content)
+                    print(f"{i+1}) {file} uploaded")
                 else:
                     if r.content != s3_files[f]:
                         self.s3.Object(self.bucket_name, f).put(Body=r.content)
-                        print(f"{i+1}) {f} updated")
+                        print(f"{i+1}) {file} updated")
                     else:
-                        print(f"{i+1}) {f} skipped")
+                        print(f"{i+1}) {file} skipped")
         
         print("Deleting files from s3")
         
         del_f = [f for f in file_name if f not in files]
         for i, f in enumerate(del_f):
+            file = f'dataset/{f}'
             self.s3.Object(self.bucket_name, f).delete()
             print(f"{i+1}) {f} deleted")
+
 
 # ### Execution
 
