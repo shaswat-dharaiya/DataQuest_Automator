@@ -4,7 +4,6 @@
 set -e
 
 AWS_REGION="us-east-1"
-ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 
 # configure aa profile and save the credentials to that profile.
 # >> /dev/null redirects standard output (stdout) to /dev/null, which discards it.
@@ -22,8 +21,7 @@ EOF
 # Use the profile to connect to the s3 bucket
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile rearc-quest-aws \
-              --no-progress \
-              ${ENDPOINT_APPEND} $*"
+              --no-progress $*"
 
 # Unset the variables.
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
