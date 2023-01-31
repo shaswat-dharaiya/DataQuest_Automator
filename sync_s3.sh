@@ -4,12 +4,7 @@
 set -e
 
 AWS_REGION="us-east-1"
-if [ -n "$AWS_S3_ENDPOINT" ]; then
-  ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
-fi
-
-echo $AWS_S3_ENDPOINT
-echo $ENDPOINT_APPEND
+ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 
 # configure aa profile and save the credentials to that profile.
 # >> /dev/null redirects standard output (stdout) to /dev/null, which discards it.
