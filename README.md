@@ -9,9 +9,9 @@ The quest is divided into 4 parts:
 
 ## Part 1 - AWS S3 & Sourcing Datasets
 
-This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the S3 Bucket using [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py).
+This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the S3 Bucket using [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py).
 
-> **Note:** [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py) (Runs on AWS Glue) is different from [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.ipynb) (Runs locally)
+> **Note:** [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py) (Runs on AWS Glue) is different from [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) (Runs locally)
 
 ![S3 Bucket](./imgs/s3_contents.png "S3 Bucket")
 
@@ -36,7 +36,7 @@ This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the
 
 ![Roles](./imgs/roles.png "Roles")
 
-### Code walk-through - [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py)
+### Code walk-through - [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
 
 Class `manage_s3` has a <u>constructor</u> and <u>4 methods</u>.
 
@@ -88,6 +88,10 @@ Go to `Schedules` Tab and click `Create Schedule`, type in name and select the f
 
 ![schedule](./imgs/schedule.png "Job Schedule")
 
+### AWS Glue - CI/CD
+
+Attach your
+
 ## Part 2 - APIs
 
 ![S3_S2](./imgs/s3_s2.png "S3 Bucket")
@@ -101,7 +105,7 @@ We use the method `new_s3_add_files` of previously used class `manage_s3`.
    * key: Name of the file to store in S3.
 * Uses `create_bucket` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
 
-> **Note:** `new_s3_add_files` is part of [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.ipynb) and is not included in [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script.py)
+> **Note:** `new_s3_add_files` is part of [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) and is not included in [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
 ```
 new_bucket = "s2quest"
 api = "https://datausa.io/api/data?drilldowns=Nation&measures=Population"
