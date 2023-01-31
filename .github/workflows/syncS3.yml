@@ -20,16 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: SyncS3
-        run: echo "Hello"
-        # run: |
-        #   chmod +x ./sync_s3.sh
-        #   ./sync_s3.sh
-        # env:
-        #   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #   SOURCE_DIR: './s3_script'
-        #   DEST_DIR: 'scripts/'
+        run: |
+          chmod +x ./sync_s3.sh
+          ./sync_s3.sh
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: './s3_script'
+          DEST_DIR: 'scripts/'
 
 
 
