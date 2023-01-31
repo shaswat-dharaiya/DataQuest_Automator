@@ -1,7 +1,7 @@
 name: SyncToS3
 on:
   push:
-    path: ./s3_script/s3_script.py
+    paths: ./s3_script/s3_script.py
 
 # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
