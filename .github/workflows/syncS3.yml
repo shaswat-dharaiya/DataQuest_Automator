@@ -16,11 +16,18 @@ jobs:
     # https://github.com/marketplace/actions/s3-sync 
     steps:
       - uses: actions/checkout@master
-      - uses: shaswat-dharaiya/Rearc-Quest@main
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: './s3_script'
-          DEST_DIR: 'scripts/'
+      # - uses: shaswat-dharaiya/Rearc-Quest@main
+        # env:
+        #   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        #   SOURCE_DIR: './s3_script'
+        #   DEST_DIR: 'scripts/'
+
+      run: ./sync_s3.sh
+      shell: bash
+      with:
+      bucket: ${{ secrets.AWS_S3_BUCKET }}
+
+
 
