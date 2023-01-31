@@ -127,7 +127,7 @@ jobs:
 
 `SyncToS3` action uses a shell script - `sync_s3.sh` to achieve the automation:
 
-* Configuration:
+* Configure:
 ```
 AWS_REGION="us-east-1"
 
@@ -144,7 +144,7 @@ ${AWS_REGION}
 text
 EOF
 ```
-* Collection:
+* Sync:
 ```
 # Use the profile to connect to the s3 bucket
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
