@@ -2,6 +2,11 @@
 
 set -e
 
+AWS_REGION="us-east-1"
+if [ -n "$AWS_S3_ENDPOINT" ]; then
+  ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
+fi
+
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
 ${AWS_ACCESS_KEY_ID}
 ${AWS_SECRET_ACCESS_KEY}
