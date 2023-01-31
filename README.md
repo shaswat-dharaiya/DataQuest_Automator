@@ -88,30 +88,30 @@ Go to `Schedules` Tab and click `Create Schedule`, type in name and select the f
 
 ![schedule](./imgs/schedule.png "Job Schedule")
 
-### AWS Glue & GIT - CI/CD
+### GIT - CI/CD
 
-The python script in Glue comes from `.py file` in a S3 bucket. Our aim is to automatically update that file upon `git push`.
+The python script in Glue comes from `s3_script.py` file in an S3 bucket. Our aim is to automatically update that file upon `git push` done on the script.
 
 We use `github actions` to achieve this, where we mention that 
 ```
+name: SyncToS3
 on:
-  for the main branch
   push:
-    branches: [ main ]
+    path: ./s3_script/s3_script.py
 ```
 
-And it will use our AWS Credentials and copy the contents of our `s3_script` folder to `script` folder in the S3:
+And it will use AWS Credentials and copy the contents of the `s3_script` folder to `script` folder in the S3:
 
 ```
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    # https://github.com/marketplace/actions/s3-sync 
     steps:
       - uses: actions/checkout@master
-      - uses: jakejarvis/s3-sync-action@master
+      - name: SyncS3
+        run: |
+          chmod +x ./sync_s3.sh
+          ./sync_s3.sh
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -121,6 +121,48 @@ jobs:
 ```
 
 ![Actions](./imgs/actions.png "Actions")
+
+`SyncToS3` action uses a shell script - `sync_s3.sh` to achieve the automation:
+
+* Configuration:
+```
+AWS_REGION="us-east-1"
+
+# configure aa profile and save the credentials to that profile.
+# >> /dev/null redirects standard output (stdout) to /dev/null, which discards it.
+# 2>&1 redirects standard error (2) to standard output (1),
+# which then discards it as well since standard output has already been redirected.
+# & indicates a file descriptor.
+# There are usually 3 file descriptors - standard input, output, and error.
+aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
+${AWS_ACCESS_KEY_ID}
+${AWS_SECRET_ACCESS_KEY}
+${AWS_REGION}
+text
+EOF
+```
+* Collection:
+```
+# Use the profile to connect to the s3 bucket
+sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+              --profile rearc-quest-aws \
+              --no-progress \
+              --endpoint-url $*"
+```
+
+* Exit:
+```
+# Unset the variables.
+# The EOF delimeter tells the shell that the here document has completed
+aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
+null
+null
+null
+text
+EOF
+```
+
+
 
 ## Part 2 - APIs
 
