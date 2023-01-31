@@ -88,9 +88,39 @@ Go to `Schedules` Tab and click `Create Schedule`, type in name and select the f
 
 ![schedule](./imgs/schedule.png "Job Schedule")
 
-### AWS Glue - CI/CD
+### AWS Glue & GIT - CI/CD
 
-Attach your
+The python script in Glue comes from `.py file` in a S3 bucket. Our aim is to automatically update that file upon `git push`.
+
+We use `github actions` to achieve this, where we mention that 
+```
+on:
+  for the main branch
+  push:
+    branches: [ main ]
+```
+
+And it will use our AWS Credentials and copy the contents of our `s3_script` folder to `script` folder in the S3:
+
+```
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # https://github.com/marketplace/actions/s3-sync 
+    steps:
+      - uses: actions/checkout@master
+      - uses: jakejarvis/s3-sync-action@master
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: './s3_script'
+          DEST_DIR: 'scripts/'
+```
+
+![Actions](./imgs/actions.png "Actions")
 
 ## Part 2 - APIs
 
