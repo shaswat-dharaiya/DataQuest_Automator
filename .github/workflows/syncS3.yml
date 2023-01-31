@@ -4,7 +4,9 @@ name: SyncToS3
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    path: ./s3_script/s3_script.py
+    branches:
+      - master
+    # path: ./s3_script/s3_script.py
 # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -23,11 +25,15 @@ jobs:
         #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         #   SOURCE_DIR: './s3_script'
         #   DEST_DIR: 'scripts/'
-
-      run: ./sync_s3.sh
-      shell: bash
-      with:
-      bucket: ${{ secrets.AWS_S3_BUCKET }}
+      - name: SyncS3
+      - run:  bash ./sync_s3.sh
+          shell: bash
+          env:
+            AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            SOURCE_DIR: './s3_script'
+            DEST_DIR: 'scripts/'
 
 
 
