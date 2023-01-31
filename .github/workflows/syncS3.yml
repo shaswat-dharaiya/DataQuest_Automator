@@ -26,7 +26,7 @@ jobs:
         #   SOURCE_DIR: './s3_script'
         #   DEST_DIR: 'scripts/'
       - name: SyncS3
-      - run:  bash ./sync_s3.sh
+      - run:  sh ./sync_s3.sh
           shell: bash
           env:
             AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
