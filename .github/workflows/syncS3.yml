@@ -2,7 +2,7 @@ name: SyncToS3
 on:
   push:
   branches:
-      - master
+      - main
     paths: 
       - s3_script/s3_script.py
 
