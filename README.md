@@ -97,7 +97,10 @@ We use `github actions` to achieve this, where we mention that
 name: SyncToS3
 on:
   push:
-    path: ./s3_script/s3_script.py
+    branches:
+      - main
+    paths: 
+      - s3_script/s3_script.py
 ```
 
 And it will use AWS Credentials and copy the contents of the `s3_script` folder to `script` folder in the S3:
