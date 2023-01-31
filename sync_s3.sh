@@ -22,7 +22,7 @@ EOF
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile rearc-quest-aws \
               --no-progress \
-              --endpoint-url $*"
+              --endpoint-url  $*"
 
 # Unset the variables.
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
