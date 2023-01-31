@@ -27,7 +27,6 @@ jobs:
         #   DEST_DIR: 'scripts/'
       - name: SyncS3
         run:  sh ./sync_s3.sh
-          shell: bash
           env:
             AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
