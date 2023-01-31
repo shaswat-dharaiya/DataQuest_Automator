@@ -2,4 +2,4 @@
 
 set -e
 
-echo ${AWS_S3_BUCKET}
+echo "Hello" ${AWS_S3_BUCKET} "Bucket"
