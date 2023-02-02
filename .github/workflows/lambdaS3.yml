@@ -23,28 +23,34 @@ jobs:
           python-version: 3.9
       - name: Run Python commands
         run: |
-          pip install --upgrade pip
+          pip install --upgrade pip 2>&1 |
           python3.9 -m venv env
           source env/bin/activate
           echo "VIRTUAL ENV:" $VIRTUAL_ENV
-          pip install requests
-          pip install beautifulsoup4
-          pip install lxml
-          pip install pandas
-          pip install boto3
+          pip install requests 2>&1 |
+          pip install beautifulsoup4 2>&1 |
+          pip install lxml 2>&1 |
+          pip install pandas 2>&1 |
+          pip install boto3 2>&1 |
+          echo "Requirements Installed"
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/ManageS3.py $VIRTUAL_ENV/lib/python3.9/*/
-          cd $VIRTUAL_ENV/lib/*/*/
+          cd $VIRTUAL_ENV/lib/python3.9/*/
           zip -r9 lambda_function.zip * 2>&1 |
+          echo "Zip 1 complete"
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
           /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
+          echo "Upload 1 complete"
           rm -r ./s3_script.py
           rm -r ./lambda_function.zip
+          echo "Delete 1 complete"
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
           zip -r9 lambda_function_4_3.zip * 2>&1 |
           /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh 1
+          echo "Upload 2 complete"
           rm -r ./s2Quest.py
           rm -r ./lambda_function_4_3.zip
+          echo "Delete 1 complete"
         env:
           AWS_S3_BUCKET_LAMBDA: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
