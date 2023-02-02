@@ -8,6 +8,8 @@ else
     Fn=${File_Name}
 fi
 
+echo "File selected: ${Fn}"
+
 AWS_REGION="us-east-1"
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
 ${AWS_ACCESS_KEY_ID}

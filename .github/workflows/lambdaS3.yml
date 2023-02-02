@@ -56,7 +56,7 @@ jobs:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           File_Name: ./lambda_function.zip
-          File_Name1: ./lambda_function.zip
+          File_Name1: ./lambda_function_4_3.zip
 
       - name: Terraform
         run: |
