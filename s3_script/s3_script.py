@@ -87,3 +87,4 @@ res_url = "https://download.bls.gov/pub/time.series/pr/"
 
 s = manage_s3(bucket_name, res_url)
 s.sync_files()
+# chek
