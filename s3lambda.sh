@@ -1,8 +1,6 @@
 # Exit immediately
 set -e
 
-VE="/home/runner/work/Rearc-Quest/Rearc-Quest/env"
-
 AWS_REGION="us-east-1"
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
 ${AWS_ACCESS_KEY_ID}
@@ -12,7 +10,7 @@ text
 EOF
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp /home/runner/work/Rearc-Quest/Rearc-Quest/env/lib/*/*/lambda_function.zip s3://${AWS_S3_BUCKET_LAMBDA}/ \
+sh -c "aws s3 sync /home/runner/work/Rearc-Quest/Rearc-Quest/env/lib/*/*/lambda_function.zip s3://${AWS_S3_BUCKET_LAMBDA}/ \
               --profile rearc-quest-aws \
               --no-progress $*"
 
