@@ -35,22 +35,39 @@ jobs:
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/ManageS3.py $VIRTUAL_ENV/lib/python3.9/*/
           cd $VIRTUAL_ENV/lib/*/*/
-          echo "Zipping"
           zip -r9 lambda_function.zip * 2>&1 |
-          # chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
-          sh /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh "$VIRTUAL_ENV/lib/python3.9/*/lambda_function.zip"
+          AWS_REGION="us-east-1"
+          aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
+          ${AWS_ACCESS_KEY_ID}
+          ${AWS_SECRET_ACCESS_KEY}
+          ${AWS_REGION}
+          text
+          EOF
+          sh -c "aws s3 cp ./lambda_function.zip s3://${AWS_S3_BUCKET_LAMBDA}/ \
+              --profile rearc-quest-aws \
+              --no-progress $*"
+
           rm -r ./s3_script.py
           rm -r ./lambda_function.zip
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
-          echo "Zipping"
           zip -r9 lambda_function_4_3.zip * 2>&1 |
-          sh /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh "$VIRTUAL_ENV/lib/python3.9/*/lambda_function_4_3.zip"
+          sh -c "aws s3 cp ./lambda_function_4_3.zip s3://${AWS_S3_BUCKET_LAMBDA}/ \
+              --profile rearc-quest-aws \
+              --no-progress $*"
+
           rm -r ./s2Quest.py
           rm -r ./lambda_function_4_3.zip
+          aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
+          null
+          null
+          null
+          text
+          EOF
         env:
           AWS_S3_BUCKET_LAMBDA: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          File_Name: ./lambda_function.zip
 
       - name: Terraform
         run: |
