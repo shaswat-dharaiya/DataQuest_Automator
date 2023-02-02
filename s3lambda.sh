@@ -1,3 +1,6 @@
+# Exit immediately
+set -e
+
 # pip install virtualenv
 # cd $HOME
 # virtualenv -p /usr/bin/* Lambda
@@ -10,10 +13,6 @@
 # cd ~/Lambda/lib/*/*/
 # zip -r9 lambda_function.zip
 echo $VIRTUAL_ENV
-#!/bin/sh
-
-# Exit immediately
-# set -e
 
 # AWS_REGION="us-east-1"
 # aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
