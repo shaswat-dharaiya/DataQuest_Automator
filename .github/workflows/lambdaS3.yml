@@ -46,7 +46,7 @@ jobs:
           chmod +x ./s3lambda.sh
           ./s3lambda.sh
         env:
-          VIRTUAL_ENV: $VIRTUAL_ENV
+          VIRTUAL_ENV: ${{env.VIRTUAL_ENV}}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

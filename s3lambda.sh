@@ -13,7 +13,7 @@ set -e
 # cd ~/Lambda/lib/*/*/
 # zip -r9 lambda_function.zip
 varx=${VIRTUAL_ENV}
-echo ${varx}
+echo "VE: ${varx}"
 
 # AWS_REGION="us-east-1"
 # aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
