@@ -33,6 +33,7 @@ jobs:
           pip install pandas
           pip install boto3
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
+          cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/ManageS3.py $VIRTUAL_ENV/lib/python3.9/*/
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip *
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh

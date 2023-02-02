@@ -6,8 +6,7 @@ import json
 import pandas as pd
 import boto3
 
-sys.path.insert(0,"..")
-from classes.ManageS3 import ManageS3
+from ManageS3 import ManageS3
 
 # ### Execution
 
