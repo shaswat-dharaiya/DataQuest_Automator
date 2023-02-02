@@ -31,7 +31,8 @@ jobs:
           pip install beautifulsoup4
           pip install lxml
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/*/*/
-          zip -r9 $VIRTUAL_ENV/lib/*/*/lambda_function.zip *
+          cd $VIRTUAL_ENV/lib/*/*/
+          zip -r9 lambda_function.zip *
           source env/bin/deactivate
 
       
@@ -40,7 +41,7 @@ jobs:
           chmod +x ./s3lambda.sh
           ./s3lambda.sh
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
