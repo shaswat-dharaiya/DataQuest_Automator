@@ -30,9 +30,6 @@ jobs:
           pip install requests
           pip install beautifulsoup4
           pip install lxml
-        
-      - name: s3_script.py file
-        run: |
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/*/*/
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip *
