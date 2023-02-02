@@ -5,7 +5,6 @@ import requests
 import json
 import pandas as pd
 import boto3
-import requests
 
 sys.path.insert(0,"..")
 from classes.ManageS3 import ManageS3

@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Run Python commands
         run: |
           pip install --upgrade pip
-          python3.8 -m venv env
+          python3.9 -m venv env
           source env/bin/activate
           echo "VIRTUAL ENV:" $VIRTUAL_ENV
           pip install requests
@@ -32,7 +32,7 @@ jobs:
           pip install lxml
           pip install pandas
           pip install boto3
-          cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/*/*/
+          cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip *
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
