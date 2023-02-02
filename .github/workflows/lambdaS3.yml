@@ -38,14 +38,11 @@ jobs:
           python3.8 -m venv env
           source env/bin/activate
           echo "VIRTUAL ENV:" $VIRTUAL_ENV
-          ls $VIRTUAL_ENV
-          source $VIRTUAL_ENV/bin/activate
           pip install beautifulsoup4
           pip install lxml
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/*/*/
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip *
-          ls ./
 
       
       - name: S3Lambda
