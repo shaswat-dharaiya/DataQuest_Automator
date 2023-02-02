@@ -1,5 +1,5 @@
 pip install virtualenv
-cd $HOME
+# cd $HOME
 virtualenv -p /usr/bin/* Lambda
 source Lambda/bin/activate
 pip install beautifulsoup4
