@@ -78,3 +78,11 @@ class ManageS3():
         for i, f in enumerate(del_f):
             self.s3.Object(self.bucket_name, f).delete()
             print(f"{i+1}) {f} deleted")
+
+    
+    def new_s3_add_files(self, bucket_name, api, key):
+        r = requests.get(api).text
+#         Create the bucket if not exists.
+        _ = self.s3.create_bucket(Bucket=bucket_name) 
+        self.s3.Object(bucket_name, key).put(Body=r)
+        print(f"Data from given API is written to {bucket_name} bucket.")

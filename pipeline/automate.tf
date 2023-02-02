@@ -1,12 +1,12 @@
-# locals {
-#   instances = csvdecode(file("srd22_accessKeys.csv"))
-# }
+locals {
+  instances = csvdecode(file("srd22_accessKeys.csv"))
+}
 
 provider "aws" {
-  # access_key=tolist(local.instances)[0]["Access key ID"]
-  # secret_key=tolist(local.instances)[0]["Secret access key"]
-  access_key="${var.AWS_ACCESS_KEY_ID}"
-  secret_key="${var.AWS_SECRET_ACCESS_KEY}"
+  access_key=tolist(local.instances)[0]["Access key ID"]
+  secret_key=tolist(local.instances)[0]["Secret access key"]
+  # access_key="${var.AWS_ACCESS_KEY_ID}"
+  # secret_key="${var.AWS_SECRET_ACCESS_KEY}"
   region = "us-east-1"
 }
 
@@ -75,4 +75,57 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_s3_script" {
     source_arn = aws_cloudwatch_event_rule.every_day.arn
 }
 
+data "aws_s3_bucket" "bucket" {
+  bucket = "${var.s3_bucket}"
+}
 
+resource "aws_sqs_queue" "queue" {
+  name = "s3-event-notification-queue"
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:*:*:s3-event-notification-queue",
+      "Condition": {
+        "ArnEquals": { "aws:SourceArn": "${data.aws_s3_bucket.bucket.arn}" }
+      }
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = data.aws_s3_bucket.bucket.id
+
+  queue {
+    queue_arn     = aws_sqs_queue.queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_suffix = ".log"
+  }
+}
+
+resource "aws_lambda_function" "s2Quest" {
+  s3_bucket        = "${var.s3_bucket}"
+  s3_key           = "lambda_function_4_3.zip"
+  function_name    = "LAST_PART"
+  handler          = "s2Quest.lambda_handler"
+  runtime          = "python3.9"
+  timeout          = 300
+  role             = "${aws_iam_role.s3_quest_terraform.arn}"
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.bucket.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.s2Quest.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".log"
+  }
+}
