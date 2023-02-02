@@ -1,4 +1,4 @@
-name: SyncToS3
+name: LambdaS3
 on:
   push:
     branches:
@@ -17,11 +17,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: SyncS3
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Run Python commands
+        run: |
+          pip install --upgrade pip
+          python3.8 -m venv env
+          source env/bin/activate
+          echo "VIRTUAL ENV:" $VIRTUAL_ENV- uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Run Python commands
+        run: |
+          pip install --upgrade pip
+          python3.8 -m venv env
+          source env/bin/activate
+          echo "VIRTUAL ENV:" $VIRTUAL_ENV
+
+      
+      - name: S3Lambda
         run: |
           chmod +x ./s3lambda.sh
           ./s3lambda.sh
         env:
+          VIRTUAL_ENV: ${{VIRTUAL_ENV}}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

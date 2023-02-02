@@ -1,15 +1,15 @@
-pip install virtualenv
-cd $HOME
-virtualenv -p /usr/bin/* Lambda
-source Lambda/bin/activate
-pwd
-ls ./
-pip install beautifulsoup4
-pip install lxml
-cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py ~/Lambda/lib/*/*/
-cd ~/Lambda/lib/*/*/
-zip -r9 lambda_function.zip
-
+# pip install virtualenv
+# cd $HOME
+# virtualenv -p /usr/bin/* Lambda
+# source Lambda/bin/activate
+# pwd
+# ls ./
+# pip install beautifulsoup4
+# pip install lxml
+# cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py ~/Lambda/lib/*/*/
+# cd ~/Lambda/lib/*/*/
+# zip -r9 lambda_function.zip
+echo $VIRTUAL_ENV
 #!/bin/sh
 
 # Exit immediately
