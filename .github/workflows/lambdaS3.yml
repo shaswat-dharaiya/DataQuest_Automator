@@ -37,12 +37,12 @@ jobs:
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip *
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
-          /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh ./lambda_function.zip
+          /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh "./lambda_function.zip"
           rm -r ./s3_script.py
           rm -r ./lambda_function.zip
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
           zip -r9 lambda_function_4_3.zip *
-          /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh ./lambda_function_4_3.zip
+          /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh "./lambda_function_4_3.zip"
           rm -r ./s2Quest.py
           rm -r ./lambda_function_4_3.zip
         env:
