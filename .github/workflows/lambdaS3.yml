@@ -39,18 +39,19 @@ jobs:
           rm -r ./lambda_function.zip
         env:
           AWS_S3_BUCKET_LAMBDA: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
-          AWS_ACCESS_KEY_ID: ${{ ${{ secrets.AWS_ACCESS_KEY_ID }} }}
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           File_Name: ./lambda_function.zip
 
       - name: Terraform
         run: |
           cd /home/runner/work/Rearc-Quest/Rearc-Quest/pipeline/
-          terraform init
-          terraform plan -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}'
-          terrraform apply --auto-approve -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}'
-          sleep 120
-          terrraform destroy --auto-approve
+          chmod +x ./TF_Script.sh
+          ./TF_Script.sh
+        env:
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
 
 
 
