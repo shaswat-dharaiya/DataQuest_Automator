@@ -1,12 +1,15 @@
-locals {
-  instances = csvdecode(file("srd22_accessKeys.csv"))
-}
+# locals {
+#   instances = csvdecode(file("srd22_accessKeys.csv"))
+# }
 
 provider "aws" {
-access_key=tolist(local.instances)[0]["Access key ID"]
-secret_key=tolist(local.instances)[0]["Secret access key"]
-region = "us-east-1"
+  # access_key=tolist(local.instances)[0]["Access key ID"]
+  # secret_key=tolist(local.instances)[0]["Secret access key"]
+  access_key="${var.AWS_ACCESS_KEY_ID}"
+  secret_key="${var.AWS_SECRET_ACCESS_KEY}"
+  region = "us-east-1"
 }
+
 
 
 data "aws_iam_policy_document" "AWSLambdaTrustPolicy" {

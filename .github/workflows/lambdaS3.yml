@@ -47,8 +47,8 @@ jobs:
         run: |
           cd /home/runner/work/Rearc-Quest/Rearc-Quest/pipeline/
           terraform init
-          terraform plan
-          terrraform apply --auto-approve
+          terraform plan -var 'AWS_ACCESS_KEY_ID=secrets.AWS_ACCESS_KEY_ID' -var 'AWS_SECRET_ACCESS_KEY=secrets.AWS_SECRET_ACCESS_KEY'
+          terrraform apply --auto-approve -var 'AWS_ACCESS_KEY_ID=secrets.AWS_ACCESS_KEY_ID' -var 'AWS_SECRET_ACCESS_KEY=secrets.AWS_SECRET_ACCESS_KEY'
           sleep 120
           terrraform destroy --auto-approve
 
