@@ -12,7 +12,7 @@ text
 EOF
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp /home/runner/work/Rearc-Quest/Rearc-Quest/env/lib/*/*/lambda_function.zip s3://${AWS_S3_BUCKET_LAMBDA}/ \
+sh -c "aws s3 cp ${File_Name} s3://${AWS_S3_BUCKET_LAMBDA}/ \
               --profile rearc-quest-aws \
               --no-progress $*"
 

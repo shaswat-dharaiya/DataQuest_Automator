@@ -19,7 +19,7 @@ text
 EOF
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+sh -c "aws s3 cp ${SOURCE_DIR} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile rearc-quest-aws \
               --no-progress $*"
 
