@@ -12,7 +12,8 @@ set -e
 # cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py ~/Lambda/lib/*/*/
 # cd ~/Lambda/lib/*/*/
 # zip -r9 lambda_function.zip
-echo "${VIRTUAL_ENV}"
+varx=${VIRTUAL_ENV}
+echo ${varx}
 
 # AWS_REGION="us-east-1"
 # aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
