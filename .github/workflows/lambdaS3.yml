@@ -39,6 +39,7 @@ jobs:
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
           /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
           rm -r ./s3_script.py
+          rm -r ./ManageS3.py
           rm -r ./lambda_function.zip
         env:
           AWS_S3_BUCKET_LAMBDA: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}

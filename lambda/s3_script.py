@@ -34,20 +34,11 @@ def lambda_handler(event, context):
 
 
     # #### Data from S3 Bucket
-
-    # key = "./srd22_accessKeys.csv"
-    key = None
-    bucket, file = "s1quest", "pr.data.0.Current"
+    bucket, file = "s1quest", "dataset/pr.data.0.Current"
 
     # Use the key from the csv file to access the bucket.
-    if key:
-        with open(key, "r") as f:
-            ACCESS_KEY,SECRET_KEY = [x.split()[0] for x in f.readlines()[-1].split(',')]
-        s3 = boto3.resource('s3',
-            aws_access_key_id=ACCESS_KEY,aws_secret_access_key=SECRET_KEY
-        )
-    else:
-        s3 = boto3.resource('s3')
+
+    s3 = boto3.resource('s3')
 
     # Get the data file from s3 bucket.
     # The file contains byte literals, we use decode() to convert it string and strip the spaces.
