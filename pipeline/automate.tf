@@ -1,6 +1,6 @@
-# locals {
-#   instances = csvdecode(file("srd22_accessKeys.csv"))
-# }
+locals {
+  instances = csvdecode(file("srd22_accessKeys.csv"))
+}
 
 provider "aws" {
   # access_key=tolist(local.instances)[0]["Access key ID"]

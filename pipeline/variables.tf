@@ -9,3 +9,7 @@ variable "lambda_function" {
 variable "role_name" {
   default = "s3quest"
 }
+
+variable "AWS_ACCESS_KEY_ID" {}
+
+variable "AWS_SECRET_ACCESS_KEY" {}
