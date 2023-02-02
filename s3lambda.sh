@@ -11,8 +11,10 @@ ${AWS_REGION}
 text
 EOF
 
+Fn=$1
+
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp "$1" s3://${AWS_S3_BUCKET_LAMBDA}/ \
+sh -c "aws s3 cp ${Fn} s3://${AWS_S3_BUCKET_LAMBDA}/ \
               --profile rearc-quest-aws \
               --no-progress $*"
 
