@@ -49,7 +49,7 @@ Class `manage_s3` has a <u>constructor</u> and <u>4 methods</u>.
    * Uses `BeautifulSoup` to scrap the file names.
   
 3. Method `read_s3()` reads the file and its contents from the s3 bucket.
-   * Uses `create_bucket` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
+   * Uses `create_bucket()` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
 
 4. Method `sync_files()` will use the above two methods and will sync S3 bucket to the dataset.
    * Calls `get_name()` & `read_s3()`
@@ -149,8 +149,7 @@ EOF
 # Use the profile to connect to the s3 bucket
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile rearc-quest-aws \
-              --no-progress \
-              --endpoint-url $*"
+              --no-progress $*"
 ```
 
 * Exit:
@@ -178,9 +177,9 @@ We use the method `new_s3_add_files` of previously used class `manage_s3`.
    * bucket_name: Name of the S3 bucket
    * api: URL to the api
    * key: Name of the file to store in S3.
-* Uses `create_bucket` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
+* Uses `create_bucket()` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
 
-> **Note:** `new_s3_add_files` is part of [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) and is not included in [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
+> **Note:** `new_s3_add_files()` is part of [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) and is not included in [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
 ```
 new_bucket = "s2quest"
 api = "https://datausa.io/api/data?drilldowns=Nation&measures=Population"

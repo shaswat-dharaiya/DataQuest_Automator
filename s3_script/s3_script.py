@@ -6,13 +6,9 @@
 # ### Importing the packages
 
 import re
-import csv
 import boto3
 import requests
 from bs4 import BeautifulSoup
-import functools
-import json
-
 
 # ### Class constructor
 
@@ -36,7 +32,7 @@ class manage_s3():
 # ### Get the file names
 
     def get_name(self):
-        soup = BeautifulSoup(requests.get(self.url).text, "lxml")
+        soup = BeautifulSoup(requests.get(self.url).text, "html.parser")
         print("Reading file names complete.")
         return [page.string for page in soup.findAll('a', href=re.compile(''))[1:]]
 
@@ -65,27 +61,27 @@ class manage_s3():
         for i, f in enumerate(files):
             file = f'dataset/{f}'
             with requests.get(self.url+f, stream=True) as r:
-                if f not in file_name:
+                if file not in file_name:
                     self.s3.Object(self.bucket_name, file).put(Body=r.content)
                     print(f"{i+1}) {file} uploaded")
                 else:
-                    if r.content != s3_files[f]:
-                        self.s3.Object(self.bucket_name, f).put(Body=r.content)
+                    if r.content != s3_files[file]:
+                        self.s3.Object(self.bucket_name, file).put(Body=r.content)
                         print(f"{i+1}) {file} updated")
                     else:
                         print(f"{i+1}) {file} skipped")
         
         print("Deleting files from s3")
         
-        del_f = [f for f in file_name if f not in files]
+        del_f = [f for f in file_name if f.split('/')[-1] not in files]
         for i, f in enumerate(del_f):
-            file = f'dataset/{f}'
             self.s3.Object(self.bucket_name, f).delete()
             print(f"{i+1}) {f} deleted")
 
 
 # ### Execution
 
+key = "../srd22_accessKeys.csv"
 bucket_name = "s1quest"
 res_url = "https://download.bls.gov/pub/time.series/pr/"
 
