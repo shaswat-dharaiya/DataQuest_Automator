@@ -1,7 +1,7 @@
 # Exit immediately
 set -e
 
-echo $1
+echo "Output" $1
 
 AWS_REGION="us-east-1"
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
