@@ -1,10 +1,21 @@
-locals {
-  instances = csvdecode(file("srd22_accessKeys.csv"))
-}
+# locals {
+#   instances = csvdecode(file("srd22_accessKeys.csv"))
+# }
 
 # variable "AWS_ACCESS_KEY_ID" {}
 
 # variable "AWS_SECRET_ACCESS_KEY" {}
+
+locals {
+  instances = csvdecode(file("../user/private_key.csv"))
+}
+
+provider "aws" {
+  access_key=tolist(local.instances)[0]["Access key ID"]
+  secret_key=tolist(local.instances)[0]["Secret access key"]
+  region = "us-east-1"
+}
+
 
 variable "s3_bucket" {
   default = "s2quest"
