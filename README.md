@@ -121,16 +121,22 @@ The idea is to achieve complete automation of the above steps. One change made, 
 Once development is done, upon a successful `git push` the entire infrastructure gets implemented "on it's own".
 
 List of things that execute before infrastructure setup:
-1. Using the root user credentials, a new IAM user gets created.
-2. Policies attached to that user can be see in this file.
-3. The User creates 2 new buckets 1 for the dataset and 1 for the API.
-   * The bucket with the API data will also contain code for the lambda functions (uploaded later on).
-4. A virtual environment gets configured on github's server using the LambdaS3 action.
+1. Using the root user credentials, a new IAM user gets created through Terraform.
+   * The user's access token is storerd to a private bucket.
+2. Policies attached to that user can be seen in [automate.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/automate.tf).
+3. The User creates 2 new buckets `s1quest` - 1 for the dataset and `s2quest` - 1 for the API.
+   * `s2quest`, The bucket with the API data will also contain code for the lambda functions (uploaded later on).
+4. A virtual environment gets configured on github's server using the `LambdaS3 action` in [syncS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/syncS3.yml).
    * the virtual environment contains following requirements: [requests, beautifulsoup4, lxml, pandas, boto3]
 5. Main files - `classes/ManageS3.py`, `lambda/s3_script.py` & `lambda/s2quest.py` gets copied to the `$VIRTUAL_ENV/lib/python3.9/site-packages/`
-   * The entire folder gets zipped and upload to S3 bucket, and all the files along with the zip files are deleted.
+   * The entire folder gets zipped and upload to `s2quest` `s2quest` , and all the copied files along with the zip files are deleted.
 6. Terraform comes into picture and the executes [TF_Script.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_Script.sh).
    * This script is reponsible for init plan and apply of the entie infrastructure.
 
 
 List of things execute during/for infrastructure setup:
+1. Access the pre-existing user role: `automate_terraform` using `rearc-user`'s acccess key.
+2. Create a lamabda function: `automate_quest`, attach our `s3_script.py` to it and upload it `s2quest`.
+   * Configure a `aws_cloudwatch_event_rule` that triggers the lambda function once every day.
+3. Access the `s2quest` bucket and attach an SQS queue such that when the data.json file from the API get uploaded to the bucket, it triggers an entry into the queue.
+4. Attach a lambda function: `LAST_PART` that gets fired when an entry is made to the above queue.
