@@ -23,7 +23,7 @@ jobs:
           python-version: 3.9
       - name: Terraform Init
         run: |
-          sh /home/runner/work/Rearc-Quest/Rearc-Quest/script/terrafom_init.sh
+          sh /home/runner/work/Rearc-Quest/Rearc-Quest/scripts/terrafom_init.sh
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -52,7 +52,7 @@ jobs:
 
       - name: Terraform
         run: |
-          sh /home/runner/work/Rearc-Quest/Rearc-Quest/script/TF_Script.sh
+          sh /home/runner/work/Rearc-Quest/Rearc-Quest/scripts/TF_Script.sh
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
