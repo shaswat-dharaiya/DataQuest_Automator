@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.9
-        - name: Terraform Init
+      - name: Terraform Init
         run: |
           sh /home/runner/work/Rearc-Quest/Rearc-Quest/script/terrafom_init.sh
         env:
