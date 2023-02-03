@@ -83,30 +83,30 @@ resource "aws_sqs_queue" "queue" {
   name = "s3-event-notification-queue"
 
   policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "sqs:SendMessage",
-      "Resource": "arn:aws:sqs:*:*:s3-event-notification-queue",
-      "Condition": {
-        "ArnEquals": { "aws:SourceArn": "${data.aws_s3_bucket.bucket.arn}" }
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "sqs:SendMessage",
+        "Resource": "arn:aws:sqs:*:*:s3-event-notification-queue",
+        "Condition": {
+          "ArnEquals": { "aws:SourceArn": "${data.aws_s3_bucket.bucket.arn}" }
+        }
       }
-    }
-  ]
-}
-POLICY
+    ]
+  }
+  POLICY
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
+resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
   bucket = data.aws_s3_bucket.bucket.id
 
   queue {
     queue_arn     = aws_sqs_queue.queue.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_suffix = ".log"
+    filter_suffix = ".json"
   }
 }
 
@@ -118,14 +118,4 @@ resource "aws_lambda_function" "s2Quest" {
   runtime          = "python3.9"
   timeout          = 300
   role             = "${aws_iam_role.s3_quest_terraform.arn}"
-}
-
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.bucket.id
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.s2Quest.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_suffix       = ".log"
-  }
 }

@@ -35,8 +35,10 @@ jobs:
           echo "Requirements Installed"
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/ManageS3.py $VIRTUAL_ENV/lib/python3.9/*/
+          cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
           cd $VIRTUAL_ENV/lib/python3.9/*/
           zip -r9 lambda_function.zip * 2>&1 |
+          zip -r9 lambda_function_4_3.zip * 2>&1 |
           echo "Zip 1 complete"
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
           /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
