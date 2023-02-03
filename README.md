@@ -20,6 +20,8 @@ This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the
 
 ![S3 Bucket](./imgs/s3_contents.png "S3 Bucket")
 
+Files can be downloaded from S3 bucket using this [page](https://s1quest.s3.amazonaws.com/index.html)
+
 ### AWS Setup
 
 1. Run locally:
@@ -133,14 +135,13 @@ One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is w
 ![Bucket](./imgs/buckets.png "Bucket")
 
 2. The code for lambda function - - `classes/ManageS3.py`, `lambda/s3_script.py` & `lambda/s2quest.py` - gets zipped up and is uploaded to `s2quest` bucket as `lambda_files.zip`.
-
 ![Files](./imgs/files.png "Files")
 
 3. Infrastructure setup
    * Access the pre-existing user role: `automate_terraform` using `rearc-user`'s acccess key.
    * Create a lamabda function: `automate_quest` that implement 1st two steps.
    * Configure an `aws_cloudwatch_event_rule` that triggers the lambda function once every day.
-
+   * Files uploaded to *s1quest* can be downloaded from S3 bucket using this [page](https://s1quest.s3.amazonaws.com/index.html) or this [page](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/index.html)
 ![Lambda1](./imgs/lambda1.png "Lambda1")
 
    * Access the `s2quest` bucket and attach an `SQS` queue such that when the `data.json` file from the API gets uploaded to the bucket, it triggers an entry into the queue.

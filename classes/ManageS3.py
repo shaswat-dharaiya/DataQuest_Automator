@@ -77,7 +77,7 @@ class ManageS3():
         2. File contents in S3 different from dataset - replace the file in S3 with the file from dataset.
         3. File in S3 but not in dataset - delete the file from S3.
         """
-        files = self.get_name()
+        files = self.get_name() + ["index.html"]
         s3_files = self.read_s3()
         file_name = s3_files.keys()
         
@@ -100,21 +100,13 @@ class ManageS3():
         
         del_f = [f for f in file_name if f.split('/')[-1] not in files]
         for i, f in enumerate(del_f):
-            if f != "index.html":
-                self.s3.Object(self.bucket_name, f).delete()
-                print(f"{i+1}) {f} deleted")
+            self.s3.Object(self.bucket_name, f).delete()
+            print(f"{i+1}) {f} deleted")
 
         url = "https://s1quest.s3.amazonaws.com/"
-        urls = [f"<a href=\"{url+f}\">{f}</a>" for f in file_name]
-        html_template = f"""<html>
-        <head>
-        <title>Title</title>
-        </head>
-        <body>
-        {'\n'.join(urls)}
-        </body>
-        </html>
-        """
+        urls = "".join([f"<a href=\"{url+f}\">{f}</a><br/>" for f in file_name])
+
+        html_template = f"<html><head><title>{self.bucket_name}</title></head><body>{urls}</body></html>"
 
         object = self.s3.Object(
         bucket_name=self.bucket_name, 
