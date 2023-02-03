@@ -18,13 +18,16 @@ data "aws_iam_role" "s3_quest_terraform" {
 
 resource "aws_lambda_function" "s3_script" {
   s3_bucket        = "${var.s3_bucket}"
-  s3_key           = "lambda_function.zip"
+  s3_key           = "lambda_files.zip"
   function_name    = "automate_quest"
   handler          = "s3_script.lambda_handler"
   runtime          = "python3.9"
   timeout          = 300
   role             = "${data.aws_iam_role.s3_quest_terraform.arn}"
+  layers           = ["arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39:3"]
 }
+
+
 
 resource "aws_cloudwatch_event_rule" "every_day" {
     name = "every_day"
@@ -75,7 +78,7 @@ resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
   bucket = data.aws_s3_bucket.bucket.id
   queue {
     queue_arn     = aws_sqs_queue.queue.arn
-    events        = ["s3:ObjectCreated:*,s3:ObjectRemoved:*"]
+    events        = ["s3:ObjectCreated:*"]
     filter_suffix = ".json"
     
   }
@@ -83,12 +86,16 @@ resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
 
 resource "aws_lambda_function" "s2quest" {
   s3_bucket        = "${var.s3_bucket}"
-  s3_key           = "lambda_function.zip"
-  function_name    = "LAST_PART"
+  s3_key           = "lambda_files.zip"
+  function_name    = "S4-3"
   handler          = "s2quest.lambda_handler"
   runtime          = "python3.9"
   timeout          = 300
   role             = "${data.aws_iam_role.s3_quest_terraform.arn}"
+  # layers           = [data. aws_lambda_layer_version.lambda_layer.arn]
+  layers           = ["arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39:3"]
+
+
 }
 
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {

@@ -1,0 +1,1 @@
+sh ./scripts/TF_Init.sh

@@ -105,7 +105,3 @@ def lambda_handler(event, context):
     # 'left_on' & 'right_on' specifies the column names from respective dfs.
     df_merge = pd.merge(df_filter,data,how='inner', left_on='year', right_on='Year')[cols]
     print(df_merge)
-
-
-
-

@@ -1,15 +1,9 @@
-set -e
-cd ./user/
-terraform init
-terraform destroy -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --auto-approve 
-terraform plan -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+cd ./TF_code/user/
+terraform init > /dev/null
+# terraform destroy -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --auto-approve 
+terraform plan -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" > /dev/null
 terraform apply -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --auto-approve 
-
-#!/bin/sh
-
-# Exit immediately
-set -e
-
+echo "User created, policies attached."
 # 1. Configure
 
 AWS_REGION="us-east-1"
@@ -42,11 +36,4 @@ null
 null
 text
 EOF
-
-cd ../buckets/
-terraform init
-terraform destroy --auto-approve 
-terraform plan
-terraform apply --auto-approve
-
-cd ../
+echo "User key upload to s3."

@@ -1,6 +1,4 @@
 # Exit immediately
-set -e
-
 AWS_REGION="us-east-1"
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
 ${AWS_ACCESS_KEY_ID}
@@ -10,9 +8,14 @@ text
 EOF
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp *.zip s3://s2quest/ \
+aws s3 rm s3://s2quest/ \
               --profile rearc-quest-aws \
-              --no-progress $*"
+              --recursive
+
+aws s3 rm s3://s1quest/ \
+              --profile rearc-quest-aws \
+              --recursive
+
 
 # Unset the variables.
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
@@ -21,3 +24,9 @@ null
 null
 text
 EOF
+
+
+cd ./TF_code/pipeline/
+terraform destroy --auto-approve
+cd  ../buckets
+terraform destroy --auto-approve

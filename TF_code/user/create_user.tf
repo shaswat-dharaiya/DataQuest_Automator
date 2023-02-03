@@ -44,3 +44,37 @@ resource "local_file" "private_key" {
     content  = "Access key ID,Secret access key\n${aws_iam_access_key.user_key.id},${aws_iam_access_key.user_key.secret}"
     filename = "private_key.csv"
 }
+
+data "aws_iam_policy_document" "AWSLambdaTrustPolicy" {
+  statement {
+    actions    = ["sts:AssumeRole"]
+    effect     = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "s3_quest_terraform" {
+  name               = "automate_terraform"
+  assume_role_policy = "${data.aws_iam_policy_document.AWSLambdaTrustPolicy.json}"
+  depends_on = [
+    aws_iam_access_key.user_key
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "srd_policy-attachment" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess", 
+    "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+    "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEventBridgeSchemasFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerFullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  ])
+  role       = "${aws_iam_role.s3_quest_terraform.name}"
+  policy_arn = each.value
+}

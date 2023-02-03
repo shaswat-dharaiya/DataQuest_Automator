@@ -11,13 +11,12 @@ The quest is divided into 4 parts:
   - [Part 2 - APIs](#part-2---apis)
   - [Part 3 - Data Analytics](#part-3---data-analytics)
   - [Part 4 - Infrastructure as Code \& Data Pipeline](#part-4---infrastructure-as-code--data-pipeline)
-    - [Flow](#flow)
+    - [1. IAM User Setup by Root User](#1-iam-user-setup-by-root-user)
+    - [2. IAM User Functionalities](#2-iam-user-functionalities)
 
 ## Part 1 - AWS S3 & Sourcing Datasets
 
 This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the S3 Bucket using [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py).
-
-> **Note:** [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py) (Runs on AWS Glue) is different from [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) (Runs locally)
 
 ![S3 Bucket](./imgs/s3_contents.png "S3 Bucket")
 
@@ -27,7 +26,7 @@ This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the
 
    <!-- To ease up the process, directly a root user has been created  -->
 
-   Create an Access key (required to run the script locally) for your IAM User.
+   Create an Access key (required to run the script locally) for your IAM User (We have used the root user keys for this step only).
 
    Add the following policies to your IAM User:
     1. AmazonS3FullAccess
@@ -76,7 +75,7 @@ Go to `Schedules` Tab and click `Create Schedule`, type in name and select the f
 
 The python script in Glue comes from `s3_script.py` file in an S3 bucket. Our aim is to automatically update that file upon `git push` done on the script.
 
-We ceate a SyncS3 `github actions` defined in [syncS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/syncS3.yml) to achieve this.
+We ceate a **SyncS3** `github actions` defined in [syncS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/syncS3.yml) to achieve this.
 
 It will use AWS Credentials and copy the contents of the `s3_script` folder to `script` folder in the S3:
 
@@ -86,7 +85,7 @@ Upon a `git push` it runs the SyncS3 job.
 
 ## Part 2 - APIs
 
-Using the [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)'s `new_s3_add_files()` method data from the [api](https://datausa.io/api/data?drilldowns=Nation&measures=Population) is uploaded to the S3 Bucket on AWS.
+Using the [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)'s `new_s3_add_files()` method, data from the [api](https://datausa.io/api/data?drilldowns=Nation&measures=Population) is uploaded to the S3 Bucket on AWS.
 
 ```python
 new_bucket = "s2quest"
@@ -112,31 +111,56 @@ This part is divided into 3 Steps:
 
 ## Part 4 - Infrastructure as Code & Data Pipeline
 
-For this we use `Terraform` & `Github Actions` to achieve Automation of Data Pipeline.
+For this we use `Terraform` & `Github Actions` to achieve Automation of Data Pipeline + CI/CD.
 
-The idea is to achieve complete automation of the above steps. One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is what's asked and latter is more of an overkill in our case.
+Upon executing the script: [setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh) following steps execute one after the other.
 
-### Flow
+One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is what's asked and latter is more of an overkill in our case.
 
-Once development is done, upon a successful `git push` the entire infrastructure gets implemented "on it's own".
-
-List of things that execute before infrastructure setup:
-1. Using the root user credentials, a new IAM user gets created through Terraform.
+### 1. IAM User Setup by Root User
+1. Using the script: [root_setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_setup.sh) and root user credentials of **srd22**, a new IAM user gets created through Terraform.
    * The user's access token is storerd to a private bucket.
-2. Policies attached to that user can be seen in [automate.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/automate.tf).
-3. The User creates 2 new buckets `s1quest` - 1 for the dataset and `s2quest` - 1 for the API.
+
+![IAM User](./imgs/users.png "IAM User")
+
+1. Policies attached to that user can be seen in [TF_code/user/create_user.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/user/create_user.tf).
+<!-- create_infra.tf -->
+### 2. IAM User Functionalities
+1. The User starts infastuctue setup using [setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh)
+   * creates 2 new buckets `s1quest` (public access) - 1 for the dataset and `s2quest` - 1 for the API using [TF_code/buckets/create_buckets.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/buckets/create_buckets.tf)
    * `s2quest`, The bucket with the API data will also contain code for the lambda functions (uploaded later on).
-4. A virtual environment gets configured on github's server using the `LambdaS3 action` in [syncS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/syncS3.yml).
-   * the virtual environment contains following requirements: [requests, beautifulsoup4, lxml, pandas, boto3]
-5. Main files - `classes/ManageS3.py`, `lambda/s3_script.py` & `lambda/s2quest.py` gets copied to the `$VIRTUAL_ENV/lib/python3.9/site-packages/`
-   * The entire folder gets zipped and upload to `s2quest` `s2quest` , and all the copied files along with the zip files are deleted.
-6. Terraform comes into picture and the executes [TF_Script.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_Script.sh).
-   * This script is reponsible for init plan and apply of the entie infrastructure.
+
+![Bucket](./imgs/buckets.png "Bucket")
+
+2. The code for lambda function - - `classes/ManageS3.py`, `lambda/s3_script.py` & `lambda/s2quest.py` - gets zipped up and is uploaded to `s2quest` bucket as `lambda_files.zip`.
+
+![Files](./imgs/files.png "Files")
+
+3. Infrastructure setup
+   * Access the pre-existing user role: `automate_terraform` using `rearc-user`'s acccess key.
+   * Create a lamabda function: `automate_quest` that implement 1st two steps.
+   * Configure an `aws_cloudwatch_event_rule` that triggers the lambda function once every day.
+
+![Lambda1](./imgs/lambda1.png "Lambda1")
+
+   * Access the `s2quest` bucket and attach an `SQS` queue such that when the `data.json` file from the API gets uploaded to the bucket, it triggers an entry into the queue.
+
+![SQS](./imgs/sqs.png "SQS")
+
+   * Attach a lambda function: `S4-3` to the SQS queue that gets triggerd when an entry is made to the queue.
+
+![Lambda2](./imgs/lambda2.png "Lambda2")
+
+![Lambda2.1](./imgs/lambda2.1.png "Lambda2.1")
+
+   * The outputs of both the lambda functions get logged into `CloudWatch`.
+
+![cloudwatch1](./imgs/cloudwatch1.png "cloudwatch1")
+![cloudwatch](./imgs/cloudwatch.png "cloudwatch")
+
+A `GitHub Action`: "LambdaSync" in the file [.github/workflows/lambdaS3.yml](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/lambdaS3.yml) syncs the S3 bucket: `s2quest` as well as in both the lambda functions upon a `git push` to the python scripts in the main branch.
+
+The IAM user get's the [destroy.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/destroy.sh) script that will delete the entire infrastructure.
 
 
-List of things execute during/for infrastructure setup:
-1. Access the pre-existing user role: `automate_terraform` using `rearc-user`'s acccess key.
-2. Create a lamabda function: `automate_quest`, attach our `s3_script.py` to it and upload it `s2quest`.
-   * Configure a `aws_cloudwatch_event_rule` that triggers the lambda function once every day.
-3. Access the `s2quest` bucket and attach an SQS queue such that when the data.json file from the API get uploaded to the bucket, it triggers an entry into the queue.
-4. Attach a lambda function: `LAST_PART` that gets fired when an entry is made to the above queue.
+On the other hand Root User has the [root_destroy.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_destroy.sh) script that will delete the entire infrastructure.
