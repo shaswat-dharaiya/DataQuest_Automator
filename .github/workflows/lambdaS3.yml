@@ -32,9 +32,9 @@ jobs:
           pip install lxml 2>&1 |
           pip install pandas 2>&1 |
           pip install boto3 2>&1 |
-          cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
           cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/ManageS3.py $VIRTUAL_ENV/lib/python3.9/*/
-          cp /home/runner/work/Rearc-Quest/Rearc-Quest/classes/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
+          cp /home/runner/work/Rearc-Quest/Rearc-Quest//s3_script.py $VIRTUAL_ENV/lib/python3.9/*/
+          cp /home/runner/work/Rearc-Quest/Rearc-Quest/lambda/s2Quest.py $VIRTUAL_ENV/lib/python3.9/*/
           cd $VIRTUAL_ENV/lib/*/*/
           zip -r9 lambda_function.zip * 2>&1 |
           chmod +x /home/runner/work/Rearc-Quest/Rearc-Quest/s3lambda.sh
