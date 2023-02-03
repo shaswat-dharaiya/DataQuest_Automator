@@ -1,12 +1,12 @@
-locals {
-  instances = csvdecode(file("srd22_accessKeys.csv"))
-}
+# locals {
+#   instances = csvdecode(file("srd22_accessKeys.csv"))
+# }
 
 provider "aws" {
-  access_key=tolist(local.instances)[0]["Access key ID"]
-  secret_key=tolist(local.instances)[0]["Secret access key"]
-  # access_key="${var.AWS_ACCESS_KEY_ID}"
-  # secret_key="${var.AWS_SECRET_ACCESS_KEY}"
+  # access_key=tolist(local.instances)[0]["Access key ID"]
+  # secret_key=tolist(local.instances)[0]["Secret access key"]
+  access_key="${var.AWS_ACCESS_KEY_ID}"
+  secret_key="${var.AWS_SECRET_ACCESS_KEY}"
   region = "us-east-1"
 }
 
@@ -81,7 +81,7 @@ data "aws_s3_bucket" "bucket" {
 
 resource "aws_sqs_queue" "queue" {
   name = "s3-event-notification-queue"
-
+  visibility_timeout_seconds = "330"
   policy = <<POLICY
   {
     "Version": "2012-10-17",
@@ -107,6 +107,7 @@ resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
     queue_arn     = aws_sqs_queue.queue.arn
     events        = ["s3:ObjectCreated:*"]
     filter_suffix = ".json"
+    
   }
 }
 
@@ -118,4 +119,11 @@ resource "aws_lambda_function" "s2Quest" {
   runtime          = "python3.9"
   timeout          = 300
   role             = "${aws_iam_role.s3_quest_terraform.arn}"
+}
+
+resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+  event_source_arn = "${aws_sqs_queue.queue.arn}"
+  enabled          = true
+  function_name    = "${aws_lambda_function.s2Quest.arn}"
+  batch_size       = 1
 }
