@@ -32,7 +32,7 @@ def lambda_handler(event, context):
 
     # key = "./srd22_accessKeys.csv"
     key = None
-    bucket, file = "s1quest", "pr.data.0.Current"
+    bucket, file = "s1quest", "dataset/pr.data.0.Current"
 
     # Use the key from the csv file to access the bucket.
     if key:
