@@ -1,52 +1,25 @@
-# locals {
-#   instances = csvdecode(file("srd22_accessKeys.csv"))
-# }
+locals {
+  instances = csvdecode(file("srd22_accessKeys.csv"))
+}
 
-variable "AWS_ACCESS_KEY_ID" {}
+# variable "AWS_ACCESS_KEY_ID" {}
 
-variable "AWS_SECRET_ACCESS_KEY" {}
+# variable "AWS_SECRET_ACCESS_KEY" {}
+
+variable "s3_bucket" {
+  default = "s2quest"
+}
 
 provider "aws" {
-  # access_key=tolist(local.instances)[0]["Access key ID"]
-  # secret_key=tolist(local.instances)[0]["Secret access key"]
-  access_key="${var.AWS_ACCESS_KEY_ID}"
-  secret_key="${var.AWS_SECRET_ACCESS_KEY}"
+  access_key=tolist(local.instances)[0]["Access key ID"]
+  secret_key=tolist(local.instances)[0]["Secret access key"]
+  # access_key="${var.AWS_ACCESS_KEY_ID}"
+  # secret_key="${var.AWS_SECRET_ACCESS_KEY}"
   region = "us-east-1"
 }
 
-
-
-data "aws_iam_policy_document" "AWSLambdaTrustPolicy" {
-  statement {
-    actions    = ["sts:AssumeRole"]
-    effect     = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "s3_quest_terraform" {
-  name               = "automate_terraform"
-  assume_role_policy = "${data.aws_iam_policy_document.AWSLambdaTrustPolicy.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "srd_policy-attachment" {
-  for_each = toset([
-    "arn:aws:iam::aws:policy/IAMFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEC2FullAccess", 
-    "arn:aws:iam::aws:policy/AmazonS3FullAccess", 
-    "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
-    "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEventBridgeSchemasFullAccess",
-    "arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerFullAccess",
-    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  ])
-  role       = "${aws_iam_role.s3_quest_terraform.name}"
-  policy_arn = each.value
+data "aws_iam_role" "s3_quest_terraform" {
+  name             = "automate_terraform"
 }
 
 resource "aws_lambda_function" "s3_script" {
@@ -56,7 +29,7 @@ resource "aws_lambda_function" "s3_script" {
   handler          = "s3_script.lambda_handler"
   runtime          = "python3.9"
   timeout          = 300
-  role             = "${aws_iam_role.s3_quest_terraform.arn}"
+  role             = "${data.aws_iam_role.s3_quest_terraform.arn}"
 }
 
 resource "aws_cloudwatch_event_rule" "every_day" {
@@ -115,19 +88,19 @@ resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
   }
 }
 
-resource "aws_lambda_function" "s2Quest" {
+resource "aws_lambda_function" "s2quest" {
   s3_bucket        = "${var.s3_bucket}"
   s3_key           = "lambda_function.zip"
   function_name    = "LAST_PART"
-  handler          = "s2Quest.lambda_handler"
+  handler          = "s2quest.lambda_handler"
   runtime          = "python3.9"
   timeout          = 300
-  role             = "${aws_iam_role.s3_quest_terraform.arn}"
+  role             = "${data.aws_iam_role.s3_quest_terraform.arn}"
 }
 
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   event_source_arn = "${aws_sqs_queue.queue.arn}"
   enabled          = true
-  function_name    = "${aws_lambda_function.s2Quest.arn}"
+  function_name    = "${aws_lambda_function.s2quest.arn}"
   batch_size       = 1
 }

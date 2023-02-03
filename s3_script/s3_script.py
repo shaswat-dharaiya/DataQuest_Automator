@@ -1,6 +1,6 @@
 
 import sys
-import os
+from os import environ
 
 sys.path.insert(0,"..")
 from classes.ManageS3 import ManageS3
@@ -8,7 +8,8 @@ from classes.ManageS3 import ManageS3
 
 # ### Execution
 
-key = "../srd22_accessKeys.csv" if os.uname()[1] == "Kaushils-MacBook-Pro-2.local" else None
+# LH_FLAG is localhost flag which is set on localhost machine but not AWS
+key = "../srd22_accessKeys.csv" if environ.get('LH_FLAG') else None
 bucket_name = "s1quest"
 res_url = "https://download.bls.gov/pub/time.series/pr/"
 

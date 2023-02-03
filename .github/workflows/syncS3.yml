@@ -1,5 +1,9 @@
+# Name of the action/job
 name: SyncToS3
+
+# Trigger event
 on:
+# Conditions for an event to be triggered.
   push:
     branches:
       - main
@@ -19,8 +23,8 @@ jobs:
       - uses: actions/checkout@master
       - name: SyncS3
         run: |
-          chmod +x ./sync_s3.sh
-          ./sync_s3.sh
+          chmod +x ./scripts/sync_s3.sh
+          ./scripts/sync_s3.sh
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

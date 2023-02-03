@@ -2,10 +2,16 @@
 
 The quest is divided into 4 parts:
 
-1. [AWS S3 & Sourcing Datasets](#part-1---aws-s3--sourcing-datasets)
-2. [APIs](#part-2---apis)
-3. [Data Analytics](#part-3---data-analytics)
-4. Infrastructure as Code & Data Pipeline with AWS CDK
+- [Rearc-Quest](#rearc-quest)
+  - [Part 1 - AWS S3 \& Sourcing Datasets](#part-1---aws-s3--sourcing-datasets)
+    - [AWS Setup](#aws-setup)
+    - [Execution](#execution)
+    - [AWS Glue - Job Schedule](#aws-glue---job-schedule)
+    - [GIT - CI/CD](#git---cicd)
+  - [Part 2 - APIs](#part-2---apis)
+  - [Part 3 - Data Analytics](#part-3---data-analytics)
+  - [Part 4 - Infrastructure as Code \& Data Pipeline](#part-4---infrastructure-as-code--data-pipeline)
+    - [Flow](#flow)
 
 ## Part 1 - AWS S3 & Sourcing Datasets
 
@@ -19,9 +25,11 @@ This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the
 
 1. Run locally:
 
-    Create an Access key (required to run the script locally) for your IAM User.
+   <!-- To ease up the process, directly a root user has been created  -->
 
-    Add the following policies to your IAM User:
+   Create an Access key (required to run the script locally) for your IAM User.
+
+   Add the following policies to your IAM User:
     1. AmazonS3FullAccess
     2. AWSGlueConsoleFullAccess
 
@@ -36,38 +44,14 @@ This [dataset](https://download.bls.gov/pub/time.series/pr/) was uploaded to the
 
 ![Roles](./imgs/roles.png "Roles")
 
-### Code walk-through - [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
-
-Class `manage_s3` has a <u>constructor</u> and <u>4 methods</u>.
-
-1. The constructor has 3 params: `bucket_name` , `url`, and `key=None`
-   * bucket_name: Name of the S3 bucket
-   * url: URL to the dataset
-   * key: Path to Access key & Secret. Default is `None` as key is not required on AWS.
-
-2. Method `get_name()` gets the name of files in dataset:
-   * Uses `BeautifulSoup` to scrap the file names.
-  
-3. Method `read_s3()` reads the file and its contents from the s3 bucket.
-   * Uses `create_bucket()` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
-
-4. Method `sync_files()` will use the above two methods and will sync S3 bucket to the dataset.
-   * Calls `get_name()` & `read_s3()`
-   * Syncing:
-     1. File not in S3 - upload it from dataset to S3.
-     2. File contents in S3 different from dataset - replace the file in S3 with the file from dataset.
-     3. File in S3 but not in dataset - delete the file from S3.
-
-5. Method `new_s3_add_file())` is explained in [Step 2](#part-2---apis).
-
 ### Execution
 
-```
-key = "srd22_accessKeys.csv"
+```python
+key = "../srd22_accessKeys.csv" if environ.get('LH_FLAG') else None
 bucket_name = "s1quest"
 res_url = "https://download.bls.gov/pub/time.series/pr/"
 
-s = manage_s3(bucket_name, res_url, key)
+s = ManageS3(bucket_name, res_url, key)
 s.sync_files()
 ```
 
@@ -92,115 +76,61 @@ Go to `Schedules` Tab and click `Create Schedule`, type in name and select the f
 
 The python script in Glue comes from `s3_script.py` file in an S3 bucket. Our aim is to automatically update that file upon `git push` done on the script.
 
-We use `github actions` to achieve this, where we mention that 
-```
-name: SyncToS3
-on:
-  push:
-    branches:
-      - main
-    paths: 
-      - s3_script/s3_script.py
-```
+We ceate a SyncS3 `github actions` defined in [syncS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/syncS3.yml) to achieve this.
 
-And it will use AWS Credentials and copy the contents of the `s3_script` folder to `script` folder in the S3:
+It will use AWS Credentials and copy the contents of the `s3_script` folder to `script` folder in the S3:
 
-```
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: SyncS3
-        run: |
-          chmod +x ./sync_s3.sh
-          ./sync_s3.sh
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: './s3_script'
-          DEST_DIR: 'scripts/'
-```
+Upon a `git push` it runs the SyncS3 job.
 
 ![Actions](./imgs/actions.png "Actions")
 
-`SyncToS3` action uses a shell script - `sync_s3.sh` to achieve the automation:
-
-* Configure:
-```
-AWS_REGION="us-east-1"
-
-# configure aa profile and save the credentials to that profile.
-# >> /dev/null redirects standard output (stdout) to /dev/null, which discards it.
-# 2>&1 redirects standard error (2) to standard output (1),
-# which then discards it as well since standard output has already been redirected.
-# & indicates a file descriptor.
-# There are usually 3 file descriptors - standard input, output, and error.
-aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
-${AWS_ACCESS_KEY_ID}
-${AWS_SECRET_ACCESS_KEY}
-${AWS_REGION}
-text
-EOF
-```
-* Sync:
-```
-# Use the profile to connect to the s3 bucket
-sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
-              --profile rearc-quest-aws \
-              --no-progress $*"
-```
-
-* Exit:
-```
-# Unset the variables.
-# The EOF delimeter tells the shell that the here document has completed
-aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
-null
-null
-null
-text
-EOF
-```
-
-
-
 ## Part 2 - APIs
 
-![S3_S2](./imgs/s3_s2.png "S3 Bucket")
+Using the [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)'s `new_s3_add_files()` method data from the [api](https://datausa.io/api/data?drilldowns=Nation&measures=Population) is uploaded to the S3 Bucket on AWS.
 
-### Execution
-
-We use the method `new_s3_add_files` of previously used class `manage_s3`.
-* Takes in 3 params: `bucket_name`, `api`, & `key`:
-   * bucket_name: Name of the S3 bucket
-   * api: URL to the api
-   * key: Name of the file to store in S3.
-* Uses `create_bucket()` method which is indempotent, meaning it will create the bucket if bucket doesn't exist, else will simply return the existing bucket.
-
-> **Note:** `new_s3_add_files()` is part of [s3_script.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.ipynb) and is not included in [s3_script.py](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s3_script/s3_script.py)
-```
+```python
 new_bucket = "s2quest"
 api = "https://datausa.io/api/data?drilldowns=Nation&measures=Population"
 file_key = "data.json"
 s.new_s3_add_files(new_bucket, api, file_key)
 ```
 
+
+
+![S3_S2](./imgs/s3_s2.png "S3 Bucket")
+
 ## Part 3 - Data Analytics
-Implementation of this part is available in [s2Quest.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s2Quest.ipynb).
+Implementation and output of this part is available in [s2quest.ipynb](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/s2quest.ipynb).
 
 This part is divided into 3 Steps:
 1. Step 3.0 - Data Collection - Data from API & S3 (pr.data.0.Current)
-   * Get the data from this [API](https://datausa.io/api/data?drilldowns=Nation&measures=Population) and file - "pr.data.0.Current" from S3 and store it in `Pandas Dataframe`.
-   * Apply `pd.to_numeric` to both the dataset in order to parse the numeric text.
-   * Data from S3 is of tsv format and we split the rows using `\t`.
 2. Step 3.1 - Mean & Standard Deviation
-   * Select the data from the API for the following condition: Year $\in$ `[2013,2018]`
-   * Use `describe()` method of `pandas.DataFrame` class and restructure to get the desired output, ie. mean & standard deviation of the population.
+   * Mean&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 317437383.0
+   * Standard Deviation = 4257090.0
 3. Step 3.2 - Grouping
-   * Perform groupby on `series_id` & `year` and sum the values up.
-   * Now get the index of max value for 1st index group, ie. series_id by mentioning `level=0` in groupby statement.
 4. Step 3.3 - Filtering
-   * Select data for **PRS30006032** and **Q01**.
-   * Perform merge between above filtered data and the data from the API on `year` column.
+
+## Part 4 - Infrastructure as Code & Data Pipeline
+
+For this we use `Terraform` & `Github Actions` to achieve Automation of Data Pipeline.
+
+The idea is to achieve complete automation of the above steps. One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is what's asked and latter is more of an overkill in our case.
+
+### Flow
+
+Once development is done, upon a successful `git push` the entire infrastructure gets implemented "on it's own".
+
+List of things that execute before infrastructure setup:
+1. Using the root user credentials, a new IAM user gets created.
+2. Policies attached to that user can be see in this file.
+3. The User creates 2 new buckets 1 for the dataset and 1 for the API.
+   * The bucket with the API data will also contain code for the lambda functions (uploaded later on).
+4. A virtual environment gets configured on github's server using the LambdaS3 action.
+   * the virtual environment contains following requirements: [requests, beautifulsoup4, lxml, pandas, boto3]
+5. Main files - `classes/ManageS3.py`, `lambda/s3_script.py` & `lambda/s2quest.py` gets copied to the `$VIRTUAL_ENV/lib/python3.9/site-packages/`
+   * The entire folder gets zipped and upload to S3 bucket, and all the files along with the zip files are deleted.
+6. Terraform comes into picture and the executes [TF_Script.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_Script.sh).
+   * This script is reponsible for init plan and apply of the entie infrastructure.
+
+
+List of things execute during/for infrastructure setup:
