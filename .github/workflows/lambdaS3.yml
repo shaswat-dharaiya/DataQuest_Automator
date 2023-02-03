@@ -55,8 +55,8 @@ jobs:
           AWS_S3_BUCKET_LAMBDA: ${{ secrets.AWS_S3_BUCKET_LAMBDA }}
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }} 
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          File_Name: ./lambda_function.zip
-          File_Name1: ./lambda_function_4_3.zip
+          File_Name: ./lambda_function_4_3.zip
+          File_Name1: ./lambda_function.zip
 
       - name: Terraform
         run: |
