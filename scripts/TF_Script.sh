@@ -1,10 +1,10 @@
 set -e
 cd /home/runner/work/Rearc-Quest/Rearc-Quest/pipeline/
 terraform init
-terraform plan -var
-terraform apply -var --auto-approve 
+terraform plan
+terraform apply --auto-approve 
 sleep 300
-terraform destroy -var --auto-approve
+terraform destroy --auto-approve
 cd  ../bucket
 terraform destroy --auto-approve
 cd  ../user
