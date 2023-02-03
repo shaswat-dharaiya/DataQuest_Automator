@@ -100,8 +100,28 @@ class ManageS3():
         
         del_f = [f for f in file_name if f.split('/')[-1] not in files]
         for i, f in enumerate(del_f):
-            self.s3.Object(self.bucket_name, f).delete()
-            print(f"{i+1}) {f} deleted")
+            if f != "index.html":
+                self.s3.Object(self.bucket_name, f).delete()
+                print(f"{i+1}) {f} deleted")
+
+        url = "https://s1quest.s3.amazonaws.com/"
+        urls = [f"<a href=\"{url+f}\">{f}</a>" for f in file_name]
+        html_template = f"""<html>
+        <head>
+        <title>Title</title>
+        </head>
+        <body>
+        {'\n'.join(urls)}
+        </body>
+        </html>
+        """
+
+        object = self.s3.Object(
+        bucket_name=self.bucket_name, 
+        key='index.html'
+        )
+
+        object.put(Body=html_template)
 
     
     def new_s3_add_files(self, bucket_name, api, key):

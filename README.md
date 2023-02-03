@@ -113,21 +113,21 @@ This part is divided into 3 Steps:
 
 For this we use `Terraform` & `Github Actions` to achieve Automation of Data Pipeline + CI/CD.
 
-Upon executing the script: [setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh) following steps execute one after the other.
+Upon executing the script: [scripts/setup.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh) following steps execute one after the other.
 
 One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is what's asked and latter is more of an overkill in our case.
 
 ### 1. IAM User Setup by Root User
-1. Using the script: [root_setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_setup.sh) and root user credentials of **srd22**, a new IAM user gets created through Terraform.
+1. Using the script: [scripts/scripts/root_setup.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/scripts/root_setup.sh) and root user credentials of **srd22**, a new IAM user gets created through Terraform.
    * The user's access token is storerd to a private bucket.
 
 ![IAM User](./imgs/users.png "IAM User")
 
-1. Policies attached to that user can be seen in [TF_code/user/create_user.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/user/create_user.tf).
+1. Policies attached to that user can be seen in [TF_code/user/create_user.tf](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/user/create_user.tf).
 <!-- create_infra.tf -->
 ### 2. IAM User Functionalities
-1. The User starts infastuctue setup using [setup.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh)
-   * creates 2 new buckets `s1quest` (public access) - 1 for the dataset and `s2quest` - 1 for the API using [TF_code/buckets/create_buckets.tf](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/buckets/create_buckets.tf)
+1. The User starts infastuctue setup using [scripts/setup.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/setup.sh)
+   * creates 2 new buckets `s1quest` (public access) - 1 for the dataset and `s2quest` - 1 for the API using [TF_code/buckets/create_buckets.tf](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/pipeline/TF_code/buckets/create_buckets.tf)
    * `s2quest`, The bucket with the API data will also contain code for the lambda functions (uploaded later on).
 
 ![Bucket](./imgs/buckets.png "Bucket")
@@ -158,9 +158,9 @@ One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is w
 ![cloudwatch1](./imgs/cloudwatch1.png "cloudwatch1")
 ![cloudwatch](./imgs/cloudwatch.png "cloudwatch")
 
-A `GitHub Action`: "LambdaSync" in the file [.github/workflows/lambdaS3.yml](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/lambdaS3.yml) syncs the S3 bucket: `s2quest` as well as in both the lambda functions upon a `git push` to the python scripts in the main branch.
+A `GitHub Action`: "LambdaSync" in the file [.github/workflows/lambdaS3.yml](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/.github/workflows/lambdaS3.yml) syncs the S3 bucket: `s2quest` as well as in both the lambda functions upon a `git push` to the python scripts in the main branch.
 
-The IAM user get's the [destroy.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/destroy.sh) script that will delete the entire infrastructure.
+The IAM user get's the [scripts/destroy.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/destroy.sh) script that will delete the entire infrastructure.
 
 
-On the other hand Root User has the [root_destroy.sh](#https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_destroy.sh) script that will delete the entire infrastructure.
+On the other hand Root User has the [scripts/root_destroy.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_destroy.sh) script that will delete the entire infrastructure.

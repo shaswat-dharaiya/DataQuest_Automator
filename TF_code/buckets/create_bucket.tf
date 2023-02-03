@@ -10,6 +10,10 @@ provider "aws" {
 
 resource "aws_s3_bucket" "s1quest" {
     bucket = "s1quest"
+    website {
+      index_document = "index.html"
+      error_document = "index.html"
+    }
 }
 
 resource "aws_s3_bucket_public_access_block" "s1quest" {
@@ -49,11 +53,11 @@ resource "aws_s3_bucket" "s2quest" {
     bucket = "s2quest"
 }
 
-# resource "aws_s3_bucket_public_access_block" "s2quest" {
-#   bucket = aws_s3_bucket.s2quest.id
+resource "aws_s3_bucket_public_access_block" "s2quest" {
+  bucket = aws_s3_bucket.s2quest.id
 
-#   block_public_acls       = true
-#   block_public_policy     = true
-#   ignore_public_acls      = true
-#   restrict_public_buckets = true
-# }
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
