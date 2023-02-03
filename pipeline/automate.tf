@@ -112,7 +112,7 @@ resource "aws_s3_bucket_notification" "bucket_notification_sqs" {
 
 resource "aws_lambda_function" "s2Quest" {
   s3_bucket        = "${var.s3_bucket}"
-  s3_key           = "lambda_function_4_3.zip"
+  s3_key           = "lambda_function.zip"
   function_name    = "LAST_PART"
   handler          = "s2Quest.lambda_handler"
   runtime          = "python3.9"
