@@ -1,3 +1,6 @@
+# Updates the S3 bucket and Lambda functions
+# when a code change occurs to any of the main python files.
+
 set -e
 
 mkdir lambda_files 

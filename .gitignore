@@ -1,5 +1,5 @@
 *.csv
 *.DS_Store
 *.cer
-
+*.code-workspace
 *terraform*
