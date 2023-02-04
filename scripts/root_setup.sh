@@ -1,8 +1,8 @@
 cd ./TF_code/user/
 terraform init > /dev/null
-# terraform destroy -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --auto-approve 
-terraform plan -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" > /dev/null
-terraform apply -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" --auto-approve 
+# terraform destroy --auto-approve 
+terraform plan > /dev/null
+terraform apply --auto-approve 
 echo "User created, policies attached."
 # 1. Configure
 
