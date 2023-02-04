@@ -1,10 +1,12 @@
+# Create a new IAM User and attach the required policies & keys.
 cd ./TF_code/user/
 terraform init > /dev/null
 # terraform destroy --auto-approve 
 terraform plan > /dev/null
 terraform apply --auto-approve 
 echo "User created, policies attached."
-# 1. Configure
+
+# Upload the IAM User's key to the private root user's S3 bucket.
 
 AWS_REGION="us-east-1"
 # configure aa profile and save the credentials to that profile.
@@ -20,12 +22,9 @@ ${AWS_REGION}
 text
 EOF
 
-# 2. Sync
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp ./private_key.csv s3://keys-roles/${DEST_DIR} \
-              --profile rearc-quest-aws \
-              --no-progress $*"
+aws s3 cp ./private_key.csv s3://keys-roles/ --profile rearc-quest-aws --no-progress
 
 # 3. Unset
 

@@ -1,3 +1,4 @@
+# Acccess the user's credentials
 locals {
   instances = csvdecode(file("../user/private_key.csv"))
 }
@@ -8,8 +9,13 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# ------------------------------------------------------
+
+# Create a publicly available S3 Bucket that will store the Datasetfrom Step 1
 resource "aws_s3_bucket" "s1quest" {
     bucket = "s1quest"
+
+    # Allow making https/http get post request to the staticly hosted website of the S3.
     cors_rule {
       allowed_headers = ["Authorization", "Content-Length"]
       allowed_methods = ["GET", "POST"]
@@ -22,6 +28,7 @@ resource "aws_s3_bucket" "s1quest" {
     }
 }
 
+# Remove all the public blockers from S3.
 resource "aws_s3_bucket_public_access_block" "s1quest" {
   bucket = aws_s3_bucket.s1quest.id
 
@@ -31,6 +38,7 @@ resource "aws_s3_bucket_public_access_block" "s1quest" {
   restrict_public_buckets = false
 }
 
+# Give the public access.
 resource "aws_s3_bucket_policy" "public_access" {
   bucket = aws_s3_bucket.s1quest.id
 
@@ -51,10 +59,14 @@ resource "aws_s3_bucket_policy" "public_access" {
   POLICY
 }
 
+# ------------------------------------------------------
+
+# Create another bucket for data.json asked in step 2
 resource "aws_s3_bucket" "s2quest" {
     bucket = "s2quest"
 }
 
+# Block all the public access to this S3 bucket.
 resource "aws_s3_bucket_public_access_block" "s2quest" {
   bucket = aws_s3_bucket.s2quest.id
 

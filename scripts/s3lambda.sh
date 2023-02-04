@@ -10,9 +10,7 @@ text
 EOF
 
 # Use the profile to connect to the s3 bucket
-sh -c "aws s3 cp *.zip s3://s2quest/ \
-              --profile rearc-quest-aws \
-              --no-progress $*"
+aws s3 cp *.zip s3://s2quest/ --profile rearc-quest-aws --no-progress
 
 # Unset the variables.
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1

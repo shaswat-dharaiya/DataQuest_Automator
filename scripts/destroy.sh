@@ -7,7 +7,7 @@ ${AWS_REGION}
 text
 EOF
 
-# Use the profile to connect to the s3 bucket
+# Empty the buckets.
 aws s3 rm s3://s2quest/ \
               --profile rearc-quest-aws \
               --recursive
@@ -25,7 +25,7 @@ null
 text
 EOF
 
-
+# Delete the infrastructure.
 cd ./TF_code/pipeline/
 terraform destroy --auto-approve
 cd  ../buckets
