@@ -5,7 +5,7 @@ set -e
 
 
 
-zip -r9 lambda_files.zip /home/runner/work/Rearc-Quest/Rearc-Quest/{classes/ManageS3.py,lambda/*}
+zip -r9 lambda_files.zip . -i ./{./classes/ManageS3.py,./lambda/*}
 
 cp ../scripts/s3lambda.sh ./
 sh ./s3lambda.sh
