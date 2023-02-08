@@ -3,10 +3,10 @@
 
 set -e
 
-
-
-zip -r9 lambda_files.zip . -i ./{./classes/ManageS3.py,./lambda/*}
-
+mkdir lambda_files 
+cp ./{classes/ManageS3.py,lambda/*} ./lambda_files
+cd ./lambda_files/
+zip -r9 lambda_files.zip . -i  * > /dev/null
 cp ../scripts/s3lambda.sh ./
 sh ./s3lambda.sh
 
