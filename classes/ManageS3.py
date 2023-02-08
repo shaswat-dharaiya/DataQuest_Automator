@@ -104,16 +104,14 @@ class ManageS3():
             print(f"{i+1}) {f} deleted")
 
         url = "https://s1quest.s3.amazonaws.com/"
-        urls = "".join([f"<a href=\"{url+f}\">{f}</a><br/>" for f in file_name])
-
+        urls = "<br/>".join([f"<a href=\"{url+f}\">{f}</a>" for f in file_name])
+        
         html_template = f"<html><head><title>{self.bucket_name}</title></head><body>{urls}</body></html>"
-
-        object = self.s3.Object(
-        bucket_name=self.bucket_name, 
-        key='index.html'
-        )
-
-        object.put(Body=html_template)
+        print(html_template)
+        self.s3.Object(
+            bucket_name=self.bucket_name, 
+            key='index.html'
+        ).put(Body=html_template, ContentType='text/html')
 
     
     def new_s3_add_files(self, bucket_name, api, key):
