@@ -5,7 +5,7 @@ set -e
 
 mkdir ./lambda_files 
 ls
-cp ./{classes/ManageS3.py,lambda/*} ./lambda_files
+cp ./{./classes/ManageS3.py,./lambda/*} ./lambda_files
 cd ./lambda_files/
 zip -r9 lambda_files.zip * > /dev/null
 cp ../scripts/s3lambda.sh ./
