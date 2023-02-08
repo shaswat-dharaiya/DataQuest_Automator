@@ -3,7 +3,8 @@
 
 set -e
 
-mkdir lambda_files 
+mkdir ./lambda_files 
+ls
 cp ./{classes/ManageS3.py,lambda/*} ./lambda_files
 cd ./lambda_files/
 zip -r9 lambda_files.zip * > /dev/null
@@ -12,22 +13,21 @@ sh ./s3lambda.sh
 
 AWS_REGION="us-east-1"
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
-${AWS_ACCESS_KEY_ID}
-${AWS_SECRET_ACCESS_KEY}
-${AWS_REGION}
+$AWS_ACCESS_KEY_ID
+$AWS_SECRET_ACCESS_KEY
+$AWS_REGION
 text
 EOF
 
 aws lambda update-function-code \
 --function-name automate_quest \
---region ${AWS_REGION} \
 --zip-file fileb://../lambda_files/lambda_files.zip
+--profile rearc-quest-aws
 
 aws lambda update-function-code \
 --function-name S4-3 \
---region ${AWS_REGION} \
 --zip-file fileb://../lambda_files/lambda_files.zip
-
+--profile rearc-quest-aws
 
 aws configure --profile rearc-quest-aws <<-EOF > /dev/null 2>&1
 null
