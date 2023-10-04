@@ -120,7 +120,7 @@ Upon executing the script: [scripts/setup.sh](https://github.com/shaswat-dharaiy
 One change made, is use of `AWS Lambda` instead of `AWS Glue` as the former is what's asked and latter is more of an overkill in our case.
 
 ### 1. IAM User Setup by Root User
-1. Using the script: [scripts/scripts/root_setup.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/scripts/root_setup.sh) and root user credentials of **srd22**, a new IAM user gets created through Terraform.
+1. Using the script: [scripts/root_setup.sh](https://github.com/shaswat-dharaiya/Rearc-Quest/blob/main/scripts/root_setup.sh) and root user credentials of **srd22**, a new IAM user gets created through Terraform.
    * The user's access token is storerd to a private bucket.
 
 ![IAM User](./imgs/users.png "IAM User")
