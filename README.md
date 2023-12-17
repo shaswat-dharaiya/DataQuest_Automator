@@ -1,4 +1,4 @@
-# Rearc-Quest
+# DataQuest_Automator
 
 The quest is divided into 4 parts:
 
